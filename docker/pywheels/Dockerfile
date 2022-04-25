@@ -5,7 +5,7 @@ ARG PYWHEELS_SERVICE_TYPE
 ENV PYWHEELS_DOCKER_GROUP="pywheels" \
     PYWHEELS_DOCKER_USER="pywheels" \
     WORKDIR=/pywheels \
-    PATH="$PATH:$HOME/.local/bin"
+    PATH="/home/pywheels/.local/bin:$PATH"
 
 RUN addgroup -S ${PYWHEELS_DOCKER_GROUP} && \
     adduser  -S ${PYWHEELS_DOCKER_USER} -G ${PYWHEELS_DOCKER_GROUP} && \

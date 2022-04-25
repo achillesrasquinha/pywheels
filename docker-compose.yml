@@ -23,6 +23,12 @@ services:
     # image: ${PYWHEELS_DOCKER_REGISTRY:-https://ghcr.io/achillesrasquinha/pywheels}:master
     networks:
       - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
     
 networks:
   db:
