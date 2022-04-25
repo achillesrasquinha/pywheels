@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres:alpine
+    networks:
+      - db
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  master:
+    build:
+      context: .
+      dockerfile: ./docker/pywheels/Dockerfile
+      args:
+        PYWHEELS_SERVICE_TYPE: master
+      # cache_from:
+      #   - ${PYWHEELS_DOCKER_REGISTRY:-https://ghcr.io/achillesrasquinha/pywheels}:master
+    # image: ${PYWHEELS_DOCKER_REGISTRY:-https://ghcr.io/achillesrasquinha/pywheels}:master
+    networks:
+      - db
+    
+networks:
+  db:
+    driver: bridge
