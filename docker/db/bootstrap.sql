@@ -1,0 +1,3 @@
+CREATE USER pywheels;
+CREATE DATABASE pywheels;
+GRANT ALL PRIVILEGES ON DATABASE pywheels TO postgres; 

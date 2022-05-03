@@ -93,9 +93,9 @@ def configure_parser(description, log_params=True):
         add_config_file_help=False,
         add_env_var_help=False,
         default_config_files=[
-            '/etc/piwheels.conf',
-            '/usr/local/etc/piwheels.conf',
-            '~/.config/piwheels/piwheels.conf'
+            '/etc/pywheels.conf',
+            '/usr/local/etc/pywheels.conf',
+            '~/.config/pywheels/pywheels.conf'
         ],
         ignore_unknown_config_file_keys=True
     )

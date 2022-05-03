@@ -139,10 +139,10 @@ def get_connection(dsn):
     try:
         db_url = make_url(dsn)
         engine = create_engine(db_url)
+        print("Connecting to db url: %s" % str(db_url))
         return engine.connect()
     except exc.OperationalError:
         raise RuntimeError("Database %s does not exist" % db_url.database)
-
 
 def detect_users(conn, test_user):
     """

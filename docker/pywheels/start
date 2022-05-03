@@ -2,4 +2,11 @@
 
 set -eo pipefail
 
-piw-master --dsn "postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+export PYWHEELS_DSN="postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+
+if [[ "${PYWHEELS_SERVICE_TYPE}" == "master" ]]; then
+    piw-initdb --dsn ${PYWHEELS_DSN} --user ${PYWHEELS_DB_USER} --yes --debug
+    piw-master --dsn ${PYWHEELS_DSN} --output-path ${PYWHEELS_OUTPUT_PATH} --verbose
+elif [[ "${PYWHEELS_SERVICE_TYPE}" == "slave" ]]; then
+    piw-slave --verbose
+fi

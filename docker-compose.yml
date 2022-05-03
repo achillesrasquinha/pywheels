@@ -2,15 +2,19 @@ version: "3.7"
 
 services:
   db:
-    image: postgres:alpine
+    build:
+      context: ./docker/db
+      dockerfile: ./Dockerfile
     networks:
       - db
     environment:
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=${DB_HOST:-db}
+      - POSTGRES_PORT=${DB_PORT:-5432}
+      - POSTGRES_DB=${DB_NAME:-postgres}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   master:
     build:
@@ -23,13 +27,48 @@ services:
     # image: ${PYWHEELS_DOCKER_REGISTRY:-https://ghcr.io/achillesrasquinha/pywheels}:master
     networks:
       - db
+    depends_on:
+      - db
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=postgres
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-pywheels}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+
+      - PYWHEELS_DB_USER=${PYWHEELS_DB_USER:-pywheels}
+    volumes:
+      - master_data:/var/www/pywheels
+
+  slave:
+    build:
+      context: .
+      dockerfile: ./docker/pywheels/Dockerfile
+      args:
+        PYWHEELS_SERVICE_TYPE: slave
+
+  proxy:
+    image: nginx:alpine
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - master
+    volumes:
+      - master_data:/usr/share/nginx/html
+
+  pgcli:
+    image: pygmy/pgcli
+    networks:
+      - db
+    depends_on:
+      - db
+    command: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@${DB_HOST:-db}:${DB_PORT:-5432}/${DB_NAME:-pywheels}
     
 networks:
   db:
     driver: bridge
+
+volumes:
+  db_data: {}
+  master_data: {}
